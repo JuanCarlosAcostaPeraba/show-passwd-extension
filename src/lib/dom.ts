@@ -32,6 +32,88 @@ export function updateEyeIcon(icon: SVGElement, isVisible: boolean): void {
       'M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z',
     );
   }
+
+  // Actualizar color basado en el contraste del fondo
+  updateIconColor(icon);
+}
+
+function updateIconColor(icon: SVGElement): void {
+  const path = icon.querySelector('path');
+  if (!path) return;
+
+  const button = icon.closest('button');
+  if (!button) return;
+
+  const backgroundColor = getComputedBackgroundColor(button);
+  const contrastColor = getContrastColor(backgroundColor);
+
+  path.setAttribute('fill', contrastColor);
+}
+
+function getComputedBackgroundColor(element: Element): string {
+  const computedStyle = window.getComputedStyle(element);
+  let backgroundColor = computedStyle.backgroundColor;
+
+  // Si el elemento no tiene fondo, buscar en el padre
+  if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
+    const parent = element.parentElement;
+    if (parent) {
+      return getComputedBackgroundColor(parent);
+    }
+  }
+
+  return backgroundColor || 'rgb(255, 255, 255)';
+}
+
+function getContrastColor(backgroundColor: string): string {
+  // Convertir color a RGB
+  const rgb = parseColorToRGB(backgroundColor);
+  if (!rgb) return '#666666'; // Color por defecto
+
+  // Calcular luminancia
+  const luminance = getLuminance(rgb);
+
+  // Si el fondo es claro, usar color oscuro; si es oscuro, usar color claro
+  return luminance > 0.5 ? '#333333' : '#e3e3e3';
+}
+
+function parseColorToRGB(color: string): { r: number; g: number; b: number } | null {
+  // Manejar diferentes formatos de color
+  if (color.startsWith('rgb(')) {
+    const values = color.match(/\d+/g);
+    if (values && values.length >= 3) {
+      return {
+        r: parseInt(values[0], 10),
+        g: parseInt(values[1], 10),
+        b: parseInt(values[2], 10),
+      };
+    }
+  }
+
+  if (color.startsWith('rgba(')) {
+    const values = color.match(/\d+/g);
+    if (values && values.length >= 3) {
+      return {
+        r: parseInt(values[0], 10),
+        g: parseInt(values[1], 10),
+        b: parseInt(values[2], 10),
+      };
+    }
+  }
+
+  // Color por defecto si no se puede parsear
+  return { r: 255, g: 255, b: 255 };
+}
+
+function getLuminance(rgb: { r: number; g: number; b: number }): number {
+  // Fórmula de luminancia relativa según WCAG
+  const { r, g, b } = rgb;
+  const [rs, gs, bs] = [r, g, b].map((c) => {
+    c = c / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
 }
 
 export function createEyeToggle(): EyeToggleElements {
@@ -47,6 +129,11 @@ export function createEyeToggle(): EyeToggleElements {
   const icon = createEyeIcon(false); // Inicialmente oculto (mostrar icono)
   button.append(icon);
   wrapper.append(button);
+
+  // Aplicar contraste automático después de la inserción
+  setTimeout(() => {
+    updateIconColor(icon);
+  }, 0);
 
   return { wrapper, button, icon };
 }
@@ -76,7 +163,8 @@ function createEyeIcon(isVisible: boolean = false): SVGElement {
     );
   }
 
-  path.setAttribute('fill', '#e3e3e3');
+  // Color inicial - se actualizará automáticamente después de la inserción
+  path.setAttribute('fill', '#666666');
   svg.append(path);
   return svg;
 }
