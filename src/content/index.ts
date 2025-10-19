@@ -1,5 +1,5 @@
-import { hasNativePasswordToggle } from '@lib/detection';
-import { createEyeToggle, markExtensionNode, updateEyeIcon } from '@lib/dom';
+import { hasNativePasswordToggle } from '@/lib/detection';
+import { createEyeToggle, markExtensionNode, updateEyeIcon } from '@/lib/dom';
 
 const managedInputs = new WeakSet<HTMLInputElement>();
 const observer = new MutationObserver((mutations) => {
