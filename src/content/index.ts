@@ -82,6 +82,17 @@ function injectToggle(input: HTMLInputElement): void {
     }
   });
 
+  // Copiar estilos del input original
+  const inputStyles = window.getComputedStyle(input);
+  const inputWidth = input.offsetWidth;
+  const inputHeight = input.offsetHeight;
+
+  // Configurar el wrapper para que tenga el mismo tamaño
+  wrapper.style.width = `${inputWidth}px`;
+  wrapper.style.height = `${inputHeight}px`;
+  wrapper.style.display = 'inline-block';
+
+  // Insertar el wrapper antes del input
   input.insertAdjacentElement('beforebegin', wrapper);
   wrapper.appendChild(input);
   wrapper.appendChild(button);

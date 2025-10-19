@@ -1,25 +1,48 @@
 .show-passwd-toggle {
   position: relative;
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .show-passwd-toggle > input {
-  flex: 1 1 auto;
+  width: 100%;
   padding-right: 2.5rem;
+  box-sizing: border-box;
+  border: inherit;
+  border-radius: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  background: inherit;
+  color: inherit;
 }
 
 .show-passwd-toggle__button {
   position: absolute;
-  right: 0.75rem;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
-  padding: 0;
+  padding: 0.25rem;
   cursor: pointer;
   color: inherit;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.show-passwd-toggle__button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.show-passwd-toggle__button:active {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .show-passwd-toggle__button:focus-visible {
