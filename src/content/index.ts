@@ -1,5 +1,5 @@
 import { hasNativePasswordToggle } from '@lib/detection';
-import { createEyeToggle, markExtensionNode } from '@lib/dom';
+import { createEyeToggle, markExtensionNode, updateEyeIcon } from '@lib/dom';
 
 const managedInputs = new WeakSet<HTMLInputElement>();
 const observer = new MutationObserver((mutations) => {
@@ -51,13 +51,14 @@ function observeInput(input: HTMLInputElement): void {
 }
 
 function injectToggle(input: HTMLInputElement): void {
-  const { wrapper, button } = createEyeToggle();
+  const { wrapper, button, icon } = createEyeToggle();
   const currentType = () => input.getAttribute('type') ?? 'password';
 
   const setVisibility = (visible: boolean) => {
     input.setAttribute('type', visible ? 'text' : 'password');
     button.setAttribute('aria-pressed', String(visible));
     button.setAttribute('data-visible', visible ? 'true' : 'false');
+    updateEyeIcon(icon, visible);
   };
 
   const toggleVisibility = () => {
@@ -98,7 +99,7 @@ function bootstrap(): void {
 
   observer.observe(document.body, {
     childList: true,
-    subtree: true
+    subtree: true,
   });
 }
 

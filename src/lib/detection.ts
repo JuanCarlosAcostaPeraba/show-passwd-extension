@@ -18,9 +18,11 @@ export function hasNativePasswordToggle(
 
   const group = root.querySelector(`[id='${input.id}']`)
     ? root
-    : input.closest('label, div, span, form') ?? root;
+    : (input.closest('label, div, span, form') ?? root);
 
-  const candidates = group.querySelectorAll('button, [role="button"], input[type="button"], input[type="submit"]');
+  const candidates = group.querySelectorAll(
+    'button, [role="button"], input[type="button"], input[type="submit"]',
+  );
 
   for (const candidate of Array.from(candidates)) {
     if (candidate === input) {
