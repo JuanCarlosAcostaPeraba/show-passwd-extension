@@ -267,7 +267,7 @@ When suggesting features:
 - **GitHub Issues**: Bug reports and feature requests
 - **GitHub Discussions**: General questions and ideas
 - **Pull Requests**: Code changes and reviews
-- **Email**: [your.email@example.com] for private matters
+- **Email**: [juancarlos.ap.dev@gmail.com] for private matters
 
 ## 📄 License
 
