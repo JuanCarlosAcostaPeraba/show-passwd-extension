@@ -189,9 +189,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/yourusername/show-passwd-extension/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/yourusername/show-passwd-extension/discussions)
-- 📧 **Contact**: [Your Email](mailto:your.email@example.com)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/juancarlosacostaperaba/show-passwd-extension/issues)
+- 📧 **Contact**: [Your Email](mailto:juancarlos.ap.dev@gmail.com)
 
 ## 🔄 Changelog
 
