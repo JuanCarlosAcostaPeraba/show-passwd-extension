@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Show Password Toggle",
   "version": "0.1.0",
-  "description": "Añade un icono de ojo a campos de contraseña que no disponen de visor nativo.",
+  "description": "Adds an eye icon to password fields that do not have a native viewer.",
   "background": {
     "service_worker": "background/index.js",
     "type": "module"
