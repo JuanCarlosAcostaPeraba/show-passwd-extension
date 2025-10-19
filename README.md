@@ -2,8 +2,6 @@
 
 A browser extension that automatically adds eye icons to password fields that don't have native show/hide toggles. Works on any website with intelligent contrast detection and seamless integration.
 
-![Extension Demo](https://via.placeholder.com/800x400/4A90E2/FFFFFF?text=Show+Password+Toggle+Demo)
-
 ## ✨ Features
 
 - **🔍 Smart Detection**: Only adds toggles to password fields that lack native show/hide functionality
