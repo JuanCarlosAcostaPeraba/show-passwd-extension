@@ -19,6 +19,9 @@ export function updateEyeIcon(icon: SVGElement, isVisible: boolean): void {
   const path = icon.querySelector('path');
   if (!path) return;
 
+  // Guardar el color actual antes de cambiar el path
+  const currentColor = path.getAttribute('fill') || path.style.fill;
+
   if (isVisible) {
     // Icono de ojo tachado (ocultar)
     path.setAttribute(
@@ -33,8 +36,13 @@ export function updateEyeIcon(icon: SVGElement, isVisible: boolean): void {
     );
   }
 
-  // Actualizar color basado en el contraste del fondo
-  updateIconColor(icon);
+  // Restaurar el color que tenía antes
+  if (currentColor) {
+    path.setAttribute('fill', currentColor);
+  } else {
+    // Si no había color, aplicar el contraste automático
+    updateIconColor(icon);
+  }
 }
 
 function updateIconColor(icon: SVGElement): void {
