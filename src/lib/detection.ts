@@ -3,6 +3,15 @@ export interface DetectionOptions {
 }
 
 const TOGGLE_KEYWORDS = ['show', 'toggle', 'eye', 'visibility'];
+const FIELD_GROUP_SELECTOR = [
+  'label',
+  '[data-testid*="password" i]',
+  '[class*="password" i]',
+  '[class*="input" i]',
+  '[class*="field" i]',
+  '[class*="control" i]',
+  '[class*="form-group" i]',
+].join(', ');
 
 /**
  * Returns true when the password input already exposes a built-in toggle
@@ -16,9 +25,7 @@ export function hasNativePasswordToggle(
     return false;
   }
 
-  const group = root.querySelector(`[id='${input.id}']`)
-    ? root
-    : (input.closest('label, div, span, form') ?? root);
+  const group = input.closest(FIELD_GROUP_SELECTOR) ?? input.parentElement ?? root;
 
   const candidates = group.querySelectorAll(
     'button, [role="button"], input[type="button"], input[type="submit"]',

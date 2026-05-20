@@ -29,13 +29,13 @@ A browser extension that automatically adds eye icons to password fields that do
 2. **Install dependencies**
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Build the extension**
 
    ```bash
-   npm run build
+   pnpm build
    ```
 
 4. **Load in Chrome**
@@ -48,26 +48,26 @@ A browser extension that automatically adds eye icons to password fields that do
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- pnpm 11+
 - Modern browser with extension support
 
 ### Available Scripts
 
 ```bash
 # Development with hot reload
-npm run dev
+pnpm dev
 
 # Production build
-npm run build
+pnpm build
 
 # Run tests
-npm run test
+pnpm test
 
 # Lint code
-npm run lint
+pnpm lint
 
 # Copy static assets
-npm run copy:static
+pnpm copy:static
 ```
 
 ### Project Structure
@@ -126,7 +126,7 @@ For developers who want to customize behavior, you can modify:
 ### Unit Tests
 
 ```bash
-npm run test
+pnpm test
 ```
 
 ### Manual Testing
@@ -147,7 +147,7 @@ npm run test
 
 ```bash
 # Create production build
-npm run build
+pnpm build
 
 # The dist/ folder contains the extension ready for:
 # - Chrome Web Store submission
@@ -164,7 +164,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes
-4. Run tests: `npm run test`
+4. Run tests: `pnpm test`
 5. Commit changes: `git commit -m 'Add amazing feature'`
 6. Push to branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request

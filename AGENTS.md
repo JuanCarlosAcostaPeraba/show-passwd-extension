@@ -7,11 +7,11 @@
 - Mirror the `src/` layout under `tests/` so specs sit next to the features they cover.
 
 ## Build, Test, and Development Commands
-- `npm install` syncs dependencies; rerun after any `package.json` change.
-- `npm run dev` bundles the extension in watch mode and serves quick reloads while reloading the unpacked build.
-- `npm run build` outputs a production-ready bundle in `dist/` for Chrome/Edge/Firefox loading.
-- `npm run lint` enforces the shared ESLint + Prettier ruleset; fix violations before pushing.
-- `npm run test` runs the Jest suite; use `npm run test -- --watch` during active work.
+- `pnpm install` syncs dependencies; rerun after any `package.json` change.
+- `pnpm dev` bundles the extension in watch mode and serves quick reloads while reloading the unpacked build.
+- `pnpm build` outputs a production-ready bundle in `dist/` for Chrome/Edge/Firefox loading.
+- `pnpm lint` enforces the shared ESLint + Prettier ruleset; fix violations before pushing.
+- `pnpm test` runs the Jest suite; use `pnpm test -- --watch` during active work.
 
 ## Coding Style & Naming Conventions
 - Use TypeScript with 2-space indentation, single quotes, trailing commas, and semicolons; Prettier auto-formats on save.
@@ -32,7 +32,7 @@
 
 ## Commit & Pull Request Guidelines
 - Follow Conventional Commits (e.g., `feat: add detection heuristic`) so automated release tooling can categorize changes.
-- PRs must include a summary, linked issue, testing evidence (`npm run test`, manual browser checks), and screenshots/gifs for UI updates.
+- PRs must include a summary, linked issue, testing evidence (`pnpm test`, manual browser checks), and screenshots/gifs for UI updates.
 - Rebase before requesting review; flag breaking UX changes explicitly in the PR body and commit footer.
 
 ## Security & Configuration Tips

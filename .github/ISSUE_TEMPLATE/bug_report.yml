@@ -1,0 +1,85 @@
+name: Bug report
+description: Report a problem with the extension.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please do not include real passwords, tokens, or other sensitive data.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      description: Include the browser name and exact version.
+      placeholder: Chrome 125.0.6422.61
+    validations:
+      required: true
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: affected-page
+    attributes:
+      label: Affected page or app
+      description: Share the public URL or describe the type of page. Avoid private credentials or account details.
+      placeholder: https://example.com/login
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Tell us exactly what you did before the issue happened.
+      placeholder: |
+        1. Open a page with a password input
+        2. Click the injected eye button
+        3. See the issue
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: The password field should toggle between hidden and visible.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: The button appears twice, does not toggle, overlaps another control, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshots or videos
+      description: Drag and drop any helpful files here.
+    validations:
+      required: false
+  - type: textarea
+    id: console-errors
+    attributes:
+      label: Console errors
+      description: Paste relevant errors only. Do not include passwords or sensitive values.
+      render: shell
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Android
+        - iOS
+        - Other
+    validations:
+      required: true

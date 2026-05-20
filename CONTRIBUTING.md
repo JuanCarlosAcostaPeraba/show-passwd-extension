@@ -7,7 +7,7 @@ Thank you for your interest in contributing to Show Password Toggle! This docume
 ### Prerequisites
 
 - Node.js 18 or higher
-- npm or yarn
+- pnpm 11+
 - Git
 - A modern browser with extension development support
 
@@ -23,13 +23,13 @@ Thank you for your interest in contributing to Show Password Toggle! This docume
 2. **Install dependencies**
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Start development mode**
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 4. **Load the extension in your browser**
@@ -63,9 +63,9 @@ Thank you for your interest in contributing to Show Password Toggle! This docume
 3. **Test your changes**
 
    ```bash
-   npm run test
-   npm run lint
-   npm run build
+   pnpm test
+   pnpm lint
+   pnpm build
    ```
 
 4. **Commit your changes**

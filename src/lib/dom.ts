@@ -60,7 +60,7 @@ function updateIconColor(icon: SVGElement): void {
 
 function getComputedBackgroundColor(element: Element): string {
   const computedStyle = window.getComputedStyle(element);
-  let backgroundColor = computedStyle.backgroundColor;
+  const backgroundColor = computedStyle.backgroundColor;
 
   // Si el elemento no tiene fondo, buscar en el padre
   if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {

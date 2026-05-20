@@ -5,29 +5,29 @@ const managedInputs = new WeakSet<HTMLInputElement>();
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     mutation.addedNodes.forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
+      if (!(node instanceof Element)) {
         return;
       }
 
-      if (node.matches?.('input[type="password"]')) {
+      if (node.matches('input[type="password"]')) {
         observeInput(node as HTMLInputElement);
       }
 
-      node.querySelectorAll?.('input[type="password"]').forEach((input) => {
+      node.querySelectorAll('input[type="password"]').forEach((input) => {
         observeInput(input as HTMLInputElement);
       });
     });
 
     mutation.removedNodes.forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
+      if (!(node instanceof Element)) {
         return;
       }
 
-      if (node.matches?.('input[type="password"]')) {
+      if (node.matches('input[type="password"]')) {
         managedInputs.delete(node as HTMLInputElement);
       }
 
-      node.querySelectorAll?.('input[type="password"]').forEach((input) => {
+      node.querySelectorAll('input[type="password"]').forEach((input) => {
         managedInputs.delete(input as HTMLInputElement);
       });
     });
@@ -56,6 +56,7 @@ function injectToggle(input: HTMLInputElement): void {
 
   const setVisibility = (visible: boolean) => {
     input.setAttribute('type', visible ? 'text' : 'password');
+    button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
     button.setAttribute('aria-pressed', String(visible));
     button.setAttribute('data-visible', visible ? 'true' : 'false');
     updateEyeIcon(icon, visible);
@@ -82,14 +83,12 @@ function injectToggle(input: HTMLInputElement): void {
     }
   });
 
-  // Copiar estilos del input original
-  const inputStyles = window.getComputedStyle(input);
   const inputWidth = input.offsetWidth;
   const inputHeight = input.offsetHeight;
 
   // Configurar el wrapper para que tenga el mismo tamaño
-  wrapper.style.width = `${inputWidth}px`;
-  wrapper.style.height = `${inputHeight}px`;
+  wrapper.style.width = `${String(inputWidth)}px`;
+  wrapper.style.height = `${String(inputHeight)}px`;
   wrapper.style.display = 'inline-block';
 
   // Insertar el wrapper antes del input
@@ -112,6 +111,14 @@ function bootstrap(): void {
     childList: true,
     subtree: true,
   });
+
+  window.addEventListener(
+    'pagehide',
+    () => {
+      observer.disconnect();
+    },
+    { once: true },
+  );
 }
 
 if (document.readyState === 'loading') {
