@@ -2,7 +2,14 @@ export interface DetectionOptions {
   root?: ParentNode;
 }
 
-const TOGGLE_KEYWORDS = ['show', 'toggle', 'eye', 'visibility'];
+const TOGGLE_KEYWORDS = [
+  'show',
+  'mostrar',
+  'toggle',
+  'eye',
+  'visibility',
+];
+const PASSWORD_KEYWORDS = ['password', 'contraseña', 'contrasena'];
 const FIELD_GROUP_SELECTOR = [
   'label',
   '[data-testid*="password" i]',
@@ -26,30 +33,26 @@ export function hasNativePasswordToggle(
   }
 
   const group = input.closest(FIELD_GROUP_SELECTOR) ?? input.parentElement ?? root;
+  const scopes = getSearchScopes(group, input.closest('form'));
 
-  const candidates = group.querySelectorAll(
-    'button, [role="button"], input[type="button"], input[type="submit"]',
-  );
+  for (const { scope, needsPasswordContext } of scopes) {
+    const candidates = scope.querySelectorAll(
+      [
+        'button',
+        '[role="button"]',
+        'input[type="button"]',
+        'input[type="submit"]',
+        'input[type="checkbox"]',
+        '[role="checkbox"]',
+      ].join(', '),
+    );
 
-  for (const candidate of Array.from(candidates)) {
-    if (candidate === input) {
-      continue;
-    }
+    for (const candidate of Array.from(candidates)) {
+      if (candidate === input) {
+        continue;
+      }
 
-    const text = (candidate.textContent ?? '').toLowerCase();
-    const ariaLabel = (candidate.getAttribute('aria-label') ?? '').toLowerCase();
-    const title = (candidate.getAttribute('title') ?? '').toLowerCase();
-    const classes = (candidate.getAttribute('class') ?? '').toLowerCase();
-
-    const haystack = `${text} ${ariaLabel} ${title} ${classes}`;
-
-    if (TOGGLE_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-      return true;
-    }
-
-    if (candidate instanceof HTMLElement) {
-      const iconName = candidate.dataset.icon ?? '';
-      if (TOGGLE_KEYWORDS.some((keyword) => iconName.toLowerCase().includes(keyword))) {
+      if (isPasswordToggleCandidate(candidate, needsPasswordContext)) {
         return true;
       }
     }
@@ -61,4 +64,69 @@ export function hasNativePasswordToggle(
   }
 
   return false;
+}
+
+function getSearchScopes(
+  group: ParentNode,
+  form: HTMLFormElement | null,
+): Array<{ scope: ParentNode; needsPasswordContext: boolean }> {
+  const scopes = [{ scope: group, needsPasswordContext: false }];
+
+  if (form && form !== group) {
+    scopes.push({ scope: form, needsPasswordContext: true });
+  }
+
+  return scopes;
+}
+
+function isPasswordToggleCandidate(candidate: Element, needsPasswordContext: boolean): boolean {
+  const text = getCandidateText(candidate).toLowerCase();
+  const ariaLabel = (candidate.getAttribute('aria-label') ?? '').toLowerCase();
+  const title = (candidate.getAttribute('title') ?? '').toLowerCase();
+  const classes = (candidate.getAttribute('class') ?? '').toLowerCase();
+  const iconName = candidate instanceof HTMLElement ? (candidate.dataset.icon ?? '').toLowerCase() : '';
+  const haystack = `${text} ${ariaLabel} ${title} ${classes} ${iconName}`;
+  const hasToggleHint = TOGGLE_KEYWORDS.some((keyword) => haystack.includes(keyword));
+  const hasPasswordHint = PASSWORD_KEYWORDS.some((keyword) => haystack.includes(keyword));
+
+  if (!hasToggleHint) {
+    return false;
+  }
+
+  if (isCheckboxLike(candidate)) {
+    return hasPasswordHint;
+  }
+
+  return !needsPasswordContext || hasPasswordHint || hasIconHint(haystack);
+}
+
+function isCheckboxLike(candidate: Element): boolean {
+  if (candidate.getAttribute('role') === 'checkbox') {
+    return true;
+  }
+
+  return candidate instanceof HTMLInputElement && candidate.type === 'checkbox';
+}
+
+function hasIconHint(haystack: string): boolean {
+  return ['eye', 'visibility'].some((keyword) => haystack.includes(keyword));
+}
+
+function getCandidateText(candidate: Element): string {
+  const parts = [candidate.textContent ?? ''];
+
+  if (candidate instanceof HTMLInputElement) {
+    const labels = Array.from(candidate.labels ?? []);
+    parts.push(candidate.value, ...labels.map((label) => label.textContent ?? ''));
+
+    if (candidate.id) {
+      document
+        .querySelectorAll<HTMLLabelElement>(`label[for="${CSS.escape(candidate.id)}"]`)
+        .forEach((label) => {
+          parts.push(label.textContent ?? '');
+        });
+    }
+  }
+
+  return parts.join(' ');
 }

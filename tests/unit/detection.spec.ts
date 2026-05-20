@@ -51,4 +51,70 @@ describe('hasNativePasswordToggle', () => {
 
     expect(hasNativePasswordToggle(input)).toBe(true);
   });
+
+  it('detects a labelled checkbox password toggle in the same group', () => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'password-field';
+    const input = document.createElement('input');
+    input.type = 'password';
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    label.append(checkbox, 'Mostrar contraseña');
+
+    wrapper.append(input, label);
+    document.body.append(wrapper);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
+
+  it('detects a checkbox password toggle through a for label', () => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'password-field';
+    const input = document.createElement('input');
+    input.type = 'password';
+    const checkbox = document.createElement('input');
+    checkbox.id = 'show-password';
+    checkbox.type = 'checkbox';
+    const label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.textContent = 'Show password';
+
+    wrapper.append(input, checkbox, label);
+    document.body.append(wrapper);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
+
+  it('detects a labelled checkbox password toggle in the same form', () => {
+    const form = document.createElement('form');
+    const field = document.createElement('div');
+    const input = document.createElement('input');
+    input.type = 'password';
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    label.append(checkbox, 'Mostrar contrasena');
+
+    field.append(input);
+    form.append(field, label);
+    document.body.append(form);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
+
+  it('ignores generic show controls elsewhere in the same form', () => {
+    const form = document.createElement('form');
+    const field = document.createElement('div');
+    const input = document.createElement('input');
+    input.type = 'password';
+    const button = document.createElement('button');
+    button.textContent = 'Show advanced options';
+
+    field.append(input);
+    form.append(field, button);
+    document.body.append(form);
+
+    expect(hasNativePasswordToggle(input)).toBe(false);
+  });
 });

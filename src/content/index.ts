@@ -1,7 +1,7 @@
 import { hasNativePasswordToggle } from '@/lib/detection';
-import { createEyeToggle, markExtensionNode, updateEyeIcon } from '@/lib/dom';
+import { createEyeToggle, EXT_VALUE, markExtensionNode, updateEyeIcon } from '@/lib/dom';
 
-const managedInputs = new WeakSet<HTMLInputElement>();
+const managedInputs = new Map<HTMLInputElement, () => void>();
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     mutation.addedNodes.forEach((node) => {
@@ -24,14 +24,16 @@ const observer = new MutationObserver((mutations) => {
       }
 
       if (node.matches('input[type="password"]')) {
-        managedInputs.delete(node as HTMLInputElement);
+        cleanupInput(node as HTMLInputElement);
       }
 
       node.querySelectorAll('input[type="password"]').forEach((input) => {
-        managedInputs.delete(input as HTMLInputElement);
+        cleanupInput(input as HTMLInputElement);
       });
     });
   }
+
+  reconcileManagedInputs();
 });
 
 function observeInput(input: HTMLInputElement): void {
@@ -39,7 +41,7 @@ function observeInput(input: HTMLInputElement): void {
     return;
   }
 
-  if (input.dataset.ext === 'show-passwd') {
+  if (input.dataset.ext === EXT_VALUE) {
     return;
   }
 
@@ -50,9 +52,36 @@ function observeInput(input: HTMLInputElement): void {
   injectToggle(input);
 }
 
+function cleanupInput(input: HTMLInputElement): void {
+  const cleanup = managedInputs.get(input);
+  if (!cleanup) {
+    return;
+  }
+
+  cleanup();
+  managedInputs.delete(input);
+}
+
+function reconcileManagedInputs(): void {
+  for (const input of Array.from(managedInputs.keys())) {
+    if (!input.isConnected) {
+      cleanupInput(input);
+      continue;
+    }
+
+    if (hasNativePasswordToggle(input)) {
+      cleanupInput(input);
+    }
+  }
+}
+
 function injectToggle(input: HTMLInputElement): void {
   const { wrapper, button, icon } = createEyeToggle();
   const currentType = () => input.getAttribute('type') ?? 'password';
+  let animationFrame = 0;
+  const resizeObserver = new ResizeObserver(() => {
+    schedulePositionSync();
+  });
 
   const setVisibility = (visible: boolean) => {
     input.setAttribute('type', visible ? 'text' : 'password');
@@ -83,23 +112,63 @@ function injectToggle(input: HTMLInputElement): void {
     }
   });
 
-  const inputWidth = input.offsetWidth;
-  const inputHeight = input.offsetHeight;
+  const syncPosition = () => {
+    animationFrame = 0;
 
-  // Configurar el wrapper para que tenga el mismo tamaño
-  wrapper.style.width = `${String(inputWidth)}px`;
-  wrapper.style.height = `${String(inputHeight)}px`;
-  wrapper.style.display = 'inline-block';
+    if (!input.isConnected) {
+      cleanupInput(input);
+      return;
+    }
 
-  // Insertar el wrapper antes del input
-  input.insertAdjacentElement('beforebegin', wrapper);
-  wrapper.appendChild(input);
-  wrapper.appendChild(button);
+    const rect = input.getBoundingClientRect();
+    const hasVisibleBox = rect.width > 0 && rect.height > 0;
 
+    wrapper.style.display = hasVisibleBox ? 'block' : 'none';
+    wrapper.style.left = `${String(rect.left)}px`;
+    wrapper.style.top = `${String(rect.top)}px`;
+    wrapper.style.width = `${String(rect.width)}px`;
+    wrapper.style.height = `${String(rect.height)}px`;
+  };
+
+  const schedulePositionSync = () => {
+    if (animationFrame) {
+      return;
+    }
+
+    animationFrame = window.requestAnimationFrame(syncPosition);
+  };
+
+  const cleanup = () => {
+    if (animationFrame) {
+      window.cancelAnimationFrame(animationFrame);
+    }
+
+    window.removeEventListener('resize', schedulePositionSync);
+    window.removeEventListener('scroll', schedulePositionSync, true);
+    input.removeEventListener('focus', schedulePositionSync);
+    input.removeEventListener('input', schedulePositionSync);
+    input.removeEventListener('mouseenter', schedulePositionSync);
+    resizeObserver.disconnect();
+    wrapper.remove();
+
+    if (input.dataset.ext === EXT_VALUE) {
+      delete input.dataset.ext;
+    }
+  };
+
+  document.body.appendChild(wrapper);
   markExtensionNode(wrapper);
   markExtensionNode(button);
-  managedInputs.add(input);
-  input.dataset.ext = 'show-passwd';
+  managedInputs.set(input, cleanup);
+  input.dataset.ext = EXT_VALUE;
+
+  window.addEventListener('resize', schedulePositionSync);
+  window.addEventListener('scroll', schedulePositionSync, true);
+  input.addEventListener('focus', schedulePositionSync);
+  input.addEventListener('input', schedulePositionSync);
+  input.addEventListener('mouseenter', schedulePositionSync);
+  resizeObserver.observe(input);
+  syncPosition();
 }
 
 function bootstrap(): void {
