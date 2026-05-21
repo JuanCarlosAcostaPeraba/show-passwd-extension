@@ -19,11 +19,6 @@
     "node": ">=18.0.0",
     "pnpm": ">=11.0.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "devDependencies": {
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.4.2",
