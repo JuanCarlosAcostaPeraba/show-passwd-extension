@@ -50,7 +50,7 @@ jobs:
         run: pnpm build
 
   tag:
-    name: Auto-tag version
+    name: Auto-tag and Release version
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor == 'JuanCarlosAcostaPeraba'
     runs-on: ubuntu-latest
@@ -71,12 +71,40 @@ jobs:
         run: |
           git fetch --tags
           if git rev-parse "v${{ steps.get_version.outputs.VERSION }}" >/dev/null 2>&1; then
-            echo "Tag v${{ steps.get_version.outputs.VERSION }} already exists. Skipping tagging."
+            echo "Tag v${{ steps.get_version.outputs.VERSION }} already exists. Skipping release."
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Tag v${{ steps.get_version.outputs.VERSION }} does not exist. Tagging..."
+            echo "Tag v${{ steps.get_version.outputs.VERSION }} does not exist. Initiating release..."
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Setup pnpm
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.3
+
+      - name: Setup Node.js
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13
+          cache: pnpm
+
+      - name: Install dependencies
+        if: steps.check_tag.outputs.exists == 'false'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        if: steps.check_tag.outputs.exists == 'false'
+        run: pnpm build
+
+      - name: Package extension
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          mkdir -p release
+          cd dist
+          zip -r ../release/show-passwd-extension-v${{ steps.get_version.outputs.VERSION }}.zip .
 
       - name: Create and push tag
         if: steps.check_tag.outputs.exists == 'false'
@@ -85,3 +113,22 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git tag "v${{ steps.get_version.outputs.VERSION }}"
           git push origin "v${{ steps.get_version.outputs.VERSION }}"
+
+      - name: Publish GitHub release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          files: release/show-passwd-extension-v${{ steps.get_version.outputs.VERSION }}.zip
+          generate_release_notes: true
+
+      - name: Upload to Chrome Web Store
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: mnao305/chrome-extension-upload@v6.0.0
+        with:
+          file-path: release/show-passwd-extension-v${{ steps.get_version.outputs.VERSION }}.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: true

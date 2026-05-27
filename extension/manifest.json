@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Show Password Toggle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Adds an eye icon to password fields that do not have a native viewer.",
   "icons": {
     "16": "assets/icon-16.png",
