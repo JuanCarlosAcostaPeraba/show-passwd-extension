@@ -34,7 +34,6 @@ export function hasNativePasswordToggle(
 
   const group = input.closest(FIELD_GROUP_SELECTOR) ?? input.parentElement ?? root;
   const scopes = getSearchScopes(group, input.closest('form'));
-
   for (const { scope, needsPasswordContext } of scopes) {
     const candidates = scope.querySelectorAll(
       [
@@ -44,11 +43,22 @@ export function hasNativePasswordToggle(
         'input[type="submit"]',
         'input[type="checkbox"]',
         '[role="checkbox"]',
+        'a',
+        'i',
+        'span',
+        'div',
+        'svg',
+        'img',
       ].join(', '),
     );
 
     for (const candidate of Array.from(candidates)) {
       if (candidate === input) {
+        continue;
+      }
+
+      // Safeguard: do not treat parent/ancestor elements of the input as toggle candidates
+      if (candidate.contains(input)) {
         continue;
       }
 

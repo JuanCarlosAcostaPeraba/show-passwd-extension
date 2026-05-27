@@ -117,4 +117,33 @@ describe('hasNativePasswordToggle', () => {
 
     expect(hasNativePasswordToggle(input)).toBe(false);
   });
+
+  it('detects a sibling icon password toggle (e.g. <i> with eye class)', () => {
+    const wrapper = document.createElement('p');
+    wrapper.id = 'pwdField';
+    wrapper.className = 'field';
+    const input = document.createElement('input');
+    input.type = 'password';
+    input.id = 'password';
+    const icon = document.createElement('i');
+    icon.className = 'mdi mdi-eye';
+    icon.id = 'togglePassword';
+
+    wrapper.append(input, icon);
+    document.body.append(wrapper);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
+
+  it('safeguards against parent elements matching keyword patterns', () => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'password-toggle-group';
+    const input = document.createElement('input');
+    input.type = 'password';
+
+    wrapper.append(input);
+    document.body.append(wrapper);
+
+    expect(hasNativePasswordToggle(input)).toBe(false);
+  });
 });
