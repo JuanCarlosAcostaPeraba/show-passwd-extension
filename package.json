@@ -7,7 +7,7 @@
   "packageManager": "pnpm@11.5.1",
   "scripts": {
     "copy:static": "node scripts/copy-static.mjs",
-    "dev": "pnpm copy:static && tsup --watch --env.NODE_ENV=development",
+    "dev": "tsup --watch --env.NODE_ENV=development --onSuccess \"pnpm copy:static\"",
     "build": "tsup --env.NODE_ENV=production && pnpm copy:static",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
