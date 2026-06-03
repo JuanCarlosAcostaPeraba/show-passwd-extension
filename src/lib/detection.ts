@@ -123,17 +123,17 @@ function hasIconHint(haystack: string): boolean {
 }
 
 function getCandidateText(candidate: Element): string {
-  const parts = [candidate.textContent ?? ''];
+  const parts = [candidate.textContent];
 
   if (candidate instanceof HTMLInputElement) {
     const labels = Array.from(candidate.labels ?? []);
-    parts.push(candidate.value, ...labels.map((label) => label.textContent ?? ''));
+    parts.push(candidate.value, ...labels.map((label) => label.textContent));
 
     if (candidate.id) {
       document
         .querySelectorAll<HTMLLabelElement>(`label[for="${CSS.escape(candidate.id)}"]`)
         .forEach((label) => {
-          parts.push(label.textContent ?? '');
+          parts.push(label.textContent);
         });
     }
   }
