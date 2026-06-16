@@ -146,4 +146,41 @@ describe('hasNativePasswordToggle', () => {
 
     expect(hasNativePasswordToggle(input)).toBe(false);
   });
+
+  it('detects a button in the same form with exact text "Mostrar" as a native password toggle', () => {
+    const form = document.createElement('form');
+    const field = document.createElement('div');
+    const input = document.createElement('input');
+    input.type = 'password';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Mostrar';
+
+    field.append(input);
+    form.append(field, button);
+    document.body.append(form);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
+
+  it('detects a button in the same form with an SVG eye path as a native password toggle', () => {
+    const form = document.createElement('form');
+    const field = document.createElement('div');
+    const input = document.createElement('input');
+    input.type = 'password';
+    const button = document.createElement('button');
+    button.type = 'button';
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z');
+    svg.append(path);
+    button.append(svg);
+
+    field.append(input);
+    form.append(field, button);
+    document.body.append(form);
+
+    expect(hasNativePasswordToggle(input)).toBe(true);
+  });
 });
